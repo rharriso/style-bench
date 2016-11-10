@@ -6,7 +6,6 @@ const gulpUtil = require('gulp-util');
 const mocha = require('gulp-mocha');
 const babel = require('gulp-babel');
 const exec = require('child_process').exec;
-const runSequence = require('run-sequence');
 const sourcemaps = require('gulp-sourcemaps');
 
 
@@ -39,6 +38,7 @@ gulp.task('server-watch', ['run'], function () {
 /**
 * Mocha watch
 */
+
 /**
 * execute mocha test for passed file
 * @param {String} testFile - test file glob to run
