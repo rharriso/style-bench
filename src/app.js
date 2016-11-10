@@ -34,7 +34,6 @@ const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
 function loadHtml(html) {
   let phInstance;
   let sitePage;
-  let startTime;
 
   return phantom.create()
     .then(instance => {
@@ -44,11 +43,15 @@ function loadHtml(html) {
     .then(page => {
       sitePage = page;
       return page.on('onLoadFinished', function (){
-        console.log(`totalTime ${Date.now() - startTime}`);
+        page.evaluate(function (){
+          var t = performance.timing;
+          return t.loadEventEnd - t.responseEnd;
+        }).then(function (timing){
+          console.log(timing);
+        });
       });
     })
     .then(() => {
-      startTime = Date.now();
       return sitePage.setContent(html, 'http://localhost');
     })
     .then(() => {
