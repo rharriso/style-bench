@@ -1,0 +1,19 @@
+{
+  "name": "style-bench",
+  "version": "1.0.0",
+  "description": "Benchmark of styling methods (nested selectors, unique classes, inline)",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/rharriso/style-bench.git"
+  },
+  "author": "Ross Harrison",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rharriso/style-bench/issues"
+  },
+  "homepage": "https://github.com/rharriso/style-bench#readme"
+}
