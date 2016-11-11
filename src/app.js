@@ -5,7 +5,7 @@ import ReactDOMServer from 'react-dom/server';
 import faker from 'faker';
 const webdriverio = require('webdriverio');
 
-const ITERATIONS = 10;
+const ITERATIONS = 1;
 const MAX_NODE_COUNT = 1500;
 let nodeCount = 0;
 const MAX_DEPTH = 15;
@@ -18,7 +18,10 @@ class TreeNode extends React.Component {
     nodeCount++;
 
     let children = _.times(_.random(1, 5), () => {
-      const child = <TreeNode currDepth={this.props.currDepth + 1}/>;
+      const child = <TreeNode
+              className={faker.lorem.words(3).replace(/[^\w]/g, '-')}
+              currDepth={this.props.currDepth + 1}
+              classStack={_.concat(this.props.classStack, this.props.className)}/>;
       return child;
     });
 
@@ -29,11 +32,13 @@ class TreeNode extends React.Component {
       width: _.random(200, 1000)
     };
 
-    return <div style={style}>
-      {children}
-      {faker.lorem.sentences(_.random(0, 25))}
-      {_.random(0, 10) === 9 && <img src={faker.image.cats()}/>}
-    </div>;
+    return (
+      <div style={style} className={this.props.className}>
+        {children}
+        {faker.lorem.sentences(_.random(0, 25))}
+        {_.random(0, 10) === 9 && <img src={faker.image.cats()}/>}
+      </div>
+    );
   }
 }
 
@@ -49,7 +54,10 @@ function loadHtml(iteration = 0) {
   }
 
   nodeCount = 0;
-  const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
+  const html = ReactDOMServer.renderToString(
+    <TreeNode currDepth={0} classStack={[]} className={faker.lorem.word()} />
+  );
+
   fs.writeFileSync('test.html', `<html><body>${html}</body></html>`);
   const stats = fs.statSync('test.html');
 
