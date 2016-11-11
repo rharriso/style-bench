@@ -3,10 +3,11 @@ import fs from 'fs';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import phantom from 'phantom';
+import faker from 'faker';
 
-const MAX_NODE_COUNT = 15000;
+const MAX_NODE_COUNT = 1500;
 let nodeCount = 0;
-const MAX_DEPTH = 50;
+const MAX_DEPTH = 10;
 
 class TreeNode extends React.Component {
   render(){
@@ -22,11 +23,16 @@ class TreeNode extends React.Component {
 
     const style = {
       display: 'inline-block',
+      backgroundColor: faker.internet.color(),
       height: _.random(200, 1000),
       width: _.random(200, 1000)
     };
 
-    return <div style={style}>{children}</div>;
+    return <div style={style}>
+      {children}
+      {faker.lorem.sentences(_.random(0, 25))}
+      {_.random(0, 10) === 9 && <img src={faker.image.cats()}/>}
+    </div>;
   }
 }
 
