@@ -1,9 +1,10 @@
 import _ from 'lodash';
+import fs from 'fs';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import phantom from 'phantom';
 
-const MAX_NODE_COUNT = 1500;
+const MAX_NODE_COUNT = 15000;
 let nodeCount = 0;
 const MAX_DEPTH = 50;
 
@@ -32,8 +33,10 @@ class TreeNode extends React.Component {
 const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
 
 function loadHtml(html) {
+  fs.writeFileSync('test.html', `<html><body>${html}</body></html>`);
   let phInstance;
   let sitePage;
+  let startDate;
 
   return phantom.create()
     .then(instance => {
@@ -43,19 +46,12 @@ function loadHtml(html) {
     .then(page => {
       sitePage = page;
       return page.on('onLoadFinished', function (){
-        page.evaluate(function (){
-          var t = performance.timing;
-          return t.loadEventEnd - t.responseEnd;
-        }).then(function (timing){
-          console.log(timing);
-        });
+        console.log(Date.now() - startDate);
       });
     })
     .then(() => {
-      return sitePage.setContent(html, 'http://localhost');
-    })
-    .then(() => {
-      return sitePage.property('content');
+      startDate = Date.now();
+      return sitePage.open('file://test.html');
     })
     .then(()=> {
       sitePage.close();
@@ -68,4 +64,4 @@ function loadHtml(html) {
 }
 
 //loadHtml(html);
-_.times(100, _.partialRight(loadHtml, html));
+_.times(100, () => loadHtml(html));
