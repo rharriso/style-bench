@@ -36,9 +36,9 @@ class TreeNode extends React.Component {
   }
 }
 
-const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
 
-function loadHtml(html) {
+function loadHtml() {
+  const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
   fs.writeFileSync('test.html', `<html><body>${html}</body></html>`);
   let phInstance;
   let sitePage;
@@ -70,4 +70,4 @@ function loadHtml(html) {
 }
 
 //loadHtml(html);
-_.times(100, () => loadHtml(html));
+_.times(100, () => loadHtml());
