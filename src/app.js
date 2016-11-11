@@ -5,6 +5,7 @@ import ReactDOMServer from 'react-dom/server';
 import faker from 'faker';
 const webdriverio = require('webdriverio');
 
+const ITERATIONS = 10;
 const MAX_NODE_COUNT = 1500;
 let nodeCount = 0;
 const MAX_DEPTH = 15;
@@ -39,16 +40,18 @@ class TreeNode extends React.Component {
 const options = { desiredCapabilities: { browserName: 'chrome' } };
 const client = webdriverio.remote(options).init();
 const results = [];
+const fileSizes = [];
 
 
 function loadHtml(iteration = 0) {
-  if (iteration > 100) {
+  if (iteration > ITERATIONS) {
     return;
   }
 
   nodeCount = 0;
   const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
   fs.writeFileSync('test.html', `<html><body>${html}</body></html>`);
+  const stats = fs.statSync('test.html');
 
   return client.url(`file://${process.cwd()}/test.html`)
               .execute(function (){
@@ -56,12 +59,14 @@ function loadHtml(iteration = 0) {
                 return t.loadEventEnd - t.responseEnd;
               }).then((result) => {
                 results.push(result.value);
-                console.log('Render Time: ', result.value);
+                fileSizes.push(stats.size);
+                console.log('File Size | Render Time: ', stats.size, result.value);
                 return loadHtml(iteration + 1);
               });
 }
 
 loadHtml(0).then(() => {
   //client.end();
-  console.log(results);
+  console.log('Average Run Time: ', Math.floor(_.sum(results) / results.length));
+  console.log('Average Size:     ', Math.floor(_.sum(fileSizes) / fileSizes.length));
 });
