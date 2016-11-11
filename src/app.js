@@ -2,12 +2,12 @@ import _ from 'lodash';
 import fs from 'fs';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import phantom from 'phantom';
 import faker from 'faker';
+const webdriverio = require('webdriverio');
 
 const MAX_NODE_COUNT = 1500;
 let nodeCount = 0;
-const MAX_DEPTH = 10;
+const MAX_DEPTH = 15;
 
 class TreeNode extends React.Component {
   render(){
@@ -36,38 +36,32 @@ class TreeNode extends React.Component {
   }
 }
 
+const options = { desiredCapabilities: { browserName: 'chrome' } };
+const client = webdriverio.remote(options).init();
+const results = [];
 
-function loadHtml() {
+
+function loadHtml(iteration = 0) {
+  if (iteration > 100) {
+    return;
+  }
+
+  nodeCount = 0;
   const html = ReactDOMServer.renderToString(<TreeNode currDepth={0} />);
   fs.writeFileSync('test.html', `<html><body>${html}</body></html>`);
-  let phInstance;
-  let sitePage;
-  let startDate;
 
-  return phantom.create()
-    .then(instance => {
-      phInstance = instance;
-      return instance.createPage();
-    })
-    .then(page => {
-      sitePage = page;
-      return page.on('onLoadFinished', function (){
-        console.log(Date.now() - startDate);
-      });
-    })
-    .then(() => {
-      startDate = Date.now();
-      return sitePage.open('file://test.html');
-    })
-    .then(()=> {
-      sitePage.close();
-      phInstance.exit();
-    })
-    .catch(error => {
-      console.log(error);
-      phInstance.exit();
-    });
+  return client.url(`file://${process.cwd()}/test.html`)
+              .execute(function (){
+                const t = performance.timing;
+                return t.loadEventEnd - t.responseEnd;
+              }).then((result) => {
+                results.push(result.value);
+                console.log('Render Time: ', result.value);
+                return loadHtml(iteration + 1);
+              });
 }
 
-//loadHtml(html);
-_.times(100, () => loadHtml());
+loadHtml(0).then(() => {
+  //client.end();
+  console.log(results);
+});
