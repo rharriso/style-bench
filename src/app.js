@@ -11,7 +11,7 @@ const MAX_NODE_COUNT = 1500;
 let nodeCount = 0;
 const MAX_DEPTH = 10;
 const AVAILABLE_CLASSES = faker.lorem.words(20).split(' ');
-const INLINE_STYLE = false;
+const INLINE_STYLE = process.env.INLINE_STYLE === 'true';
 let style = '';
 
 
@@ -54,7 +54,6 @@ class TreeNode extends React.Component {
       <div className={className} style={INLINE_STYLE ? elStyle : {}} >
         {children}
         {faker.lorem.sentences(_.random(0, 25))}
-        {_.random(0, 10) === 9 && <img src={faker.image.cats()}/>}
       </div>
     );
   }
@@ -75,6 +74,7 @@ function loadHtml(iteration = 0) {
   }
 
   nodeCount = 0;
+  style = 0;
   const tree = <TreeNode currDepth={0} classStack={[]} />;
   const html = ReactDOMServer.renderToString(tree);
 
@@ -104,7 +104,7 @@ function loadHtml(iteration = 0) {
                 results.push(result.value);
                 const fileSize = stats.size + styleStats.size;
                 fileSizes.push(fileSize);
-                console.log('File Size | Render Time: ', fileSize, result.value);
+                console.log(`ITERATION ${iteration} File Size: ${stats.size} | ${styleStats.size}, time ${result.value}`);
                 return loadHtml(iteration + 1);
               });
 }
