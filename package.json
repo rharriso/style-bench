@@ -38,6 +38,7 @@
     "gulp-sourcemaps": "^2.2.0",
     "gulp-util": "^3.0.7",
     "mocha": "^3.1.2",
+    "node-css": "^0.1.0",
     "phantom": "^3.0.2",
     "run-sequence": "^1.2.2",
     "webdriverio": "^4.4.0"
