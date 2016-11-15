@@ -30,13 +30,16 @@ class TreeNode extends React.Component {
    */
   render(){
     const className = _.sample(AVAILABLE_CLASSES);
+    const elStyle = TreeNode.style;
     const sample = _.sampleSize(this.props.classStack, 4);
     const classes = _.filter(sample.sort(_.partial(_.indexOf, this.props.classStack), _.isUndefined));
     const selector = _.map(classes, (c)=> {
       return '.' + c;
     }).join(' ');
-    const elStyle = TreeNode.style;
-    style += css(selector, elStyle);
+
+    if (_.random(0, 3) > 0){
+      style += css(selector, elStyle);
+    }
 
     let children;
 
@@ -82,6 +85,7 @@ function loadHtml(iteration = 0) {
    `<html>
       <head>
         <link rel='stylesheet' href='style.css'/>
+        <script type='text/javascript' src='https://rawgit.com/lodash/lodash/4.17.1/dist/lodash.js'></script>
       </head>
       <body>${html}</body>
     </html>`
