@@ -131,8 +131,8 @@ function loadHtml(iteration = 0) {
 loadHtml(0).then(() => {
   client.end().then(() => {
     console.log('----------');
-    console.log('INLINE_STYLE', process.env.INLINE_STYLE);
-    console.log('THROTTLE', process.env.THROTTLE);
+    console.log('INLINE_STYLE', INLINE_STYLE);
+    console.log('THROTTLE', THROTTLING);
     console.log('Average Run Time: ', Math.floor(_.sum(results) / results.length));
     console.log('Average Size:     ', Math.floor(_.sum(fileSizes) / fileSizes.length));
     console.log('----------');
