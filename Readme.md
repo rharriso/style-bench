@@ -28,3 +28,28 @@ console.log('Style Count:', _.sum(rules.map((r) => {return r && r.style && r.sty
 | http://www.allure.com/story/free-mac-lipstick-recycling-program	| 762	| 839	| 3611 | 1.101 |	4.303 |
 | http://www.allure.com/gallery/fall-fashion-bags-guide-every-price-point	| 1492	| 871	| 3705 | 0.583 |	4.253 |
 | **Median**	| **948**	| **886**	| **3611** | **1.068** | **4.068** |
+
+## Test Parameters
+
+Looking samples I've chosen the following parameters to run the tests.
+
+1. 1000 nodes (rounded up from the median nodes).
+2. 1 rule / element.
+2. 4 styles / rule
+4. Regular 3g setting for (when throttling) throttling (750kbps ~= 2^19 525kbps)
+
+# How times were measured?
+
+Filesize, and Timing
+
+# Results
+
+After running for 1000 iterations here are the results for average render time.
+
+CSS FILE:
+
+CSS FILE (throttled):
+
+Inline style
+
+Inline style (throttled):

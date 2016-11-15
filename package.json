@@ -22,7 +22,8 @@
     "faker": "^3.1.0",
     "lodash": "^4.16.6",
     "react": "^15.3.2",
-    "react-dom": "^15.3.2"
+    "react-dom": "^15.3.2",
+    "serve-static-throttle": "^1.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -32,6 +33,7 @@
     "babel-register": "^6.18.0",
     "eslint": "^3.9.1",
     "eslint-plugin-react": "^6.6.0",
+    "finalhandler": "^0.5.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-mocha": "^3.0.1",

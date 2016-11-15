@@ -1,17 +1,24 @@
 import _ from 'lodash';
 import fs from 'fs';
+import http from 'http';
+import prompt from 'prompt';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import faker from 'faker';
 const webdriverio = require('webdriverio');
 import css from 'node-css';
+import serveStatic from 'serve-static-throttle';
+import finalhandler from 'finalhandler';
 
-const ITERATIONS = 100;
-const MAX_NODE_COUNT = 1500;
+const MAX_NODE_COUNT = 1000;
 let nodeCount = 0;
 const MAX_DEPTH = 10;
 const AVAILABLE_CLASSES = faker.lorem.words(20).split(' ');
+const ITERATIONS = parseInt(process.env.ITERATIONS, 10);
 const INLINE_STYLE = process.env.INLINE_STYLE === 'true';
+const THROTTLING = process.env.THROTTLE === 'true';
+const TEST_URL = THROTTLING ? 'http://localhost:3000/test.html'
+                            : `file:${process.cwd()}/test.html`;
 let style = '';
 
 
@@ -44,9 +51,10 @@ class TreeNode extends React.Component {
     let children;
 
     if (nodeCount < MAX_NODE_COUNT && this.props.currDepth < MAX_DEPTH) {
-      children =  _.times(_.random(1, 15), () => {
+      children =  _.times(_.random(1, 15), (i) => {
         nodeCount++;
         return (<TreeNode
+                  key={i}
                   className={_.sample(classes)}
                   currDepth={this.props.currDepth + 1}
                   classStack={_.concat(this.props.classStack, className)}/>);
@@ -62,11 +70,20 @@ class TreeNode extends React.Component {
   }
 }
 
-const options = { desiredCapabilities: { browserName: 'chrome' } };
+const options = { desiredCapabilities: { browserName: 'chrome' }};
 const client = webdriverio.remote(options).init();
 const results = [];
 const fileSizes = [];
 
+if (THROTTLING) {
+  const staticServe = serveStatic('./', {throttle: Math.pow(2, 19)}); // 100kBps
+  // Create server
+  var server = http.createServer(function onRequest(req, res) {
+    staticServe(req, res, finalhandler(req, res));
+  });
+  // Listen
+  server.listen(3000);
+}
 
 /**
  *
@@ -85,7 +102,6 @@ function loadHtml(iteration = 0) {
    `<html>
       <head>
         <link rel='stylesheet' href='style.css'/>
-        <script type='text/javascript' src='https://rawgit.com/lodash/lodash/4.17.1/dist/lodash.js'></script>
       </head>
       <body>${html}</body>
     </html>`
@@ -100,21 +116,25 @@ function loadHtml(iteration = 0) {
 
   const styleStats = fs.statSync('style.css');
 
-  return client.url(`file://${process.cwd()}/test.html`)
+  return client.url(TEST_URL)
               .execute(function (){
                 const t = performance.timing;
-                return t.loadEventEnd - t.responseEnd;
+                return t.loadEventEnd - t.requestStart;
               }).then((result) => {
                 results.push(result.value);
                 const fileSize = stats.size + styleStats.size;
                 fileSizes.push(fileSize);
-                console.log(`ITERATION ${iteration} File Size: ${stats.size} | ${styleStats.size}, time ${result.value}`);
                 return loadHtml(iteration + 1);
               });
 }
 
 loadHtml(0).then(() => {
-  //client.end();
+  client.end();
+  console.log('----------');
+  console.log('INLINE_STYLE', process.env.INLINE_STYLE);
+  console.log('THROTTLE', process.env.THROTTLE);
   console.log('Average Run Time: ', Math.floor(_.sum(results) / results.length));
   console.log('Average Size:     ', Math.floor(_.sum(fileSizes) / fileSizes.length));
+  console.log('----------');
+  process.exit(0);
 });
