@@ -27,4 +27,4 @@ console.log('Style Count:', _.sum(rules.map((r) => {return r && r.style && r.sty
 | http://www.allure.com/	| 769	| 710	| 3235 | 0.923276983 |	4.556338028 |
 | http://www.allure.com/story/free-mac-lipstick-recycling-program	| 762	| 839	| 3611 | 1.101049869 |	4.303933254 |
 | http://www.allure.com/gallery/fall-fashion-bags-guide-every-price-point	| 1492	| 871	| 3705 | 0.583780161 |	4.253731343 |
-| *Median*	| *948*	| *886*	| *3611* | *1.068493151* | *4.068403909* |
+| **Median**	| **948**	| **886**	| **3611** | **1.068493151** | **4.068403909** |
