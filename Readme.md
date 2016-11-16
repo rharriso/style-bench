@@ -129,8 +129,11 @@ const styleCounts = nodes.map((n) => {
   }
 });
 
-console.log('Average Styles applied', _.sum(_.map(styleCounts, 'appliedCount')) / styleCounts.length);
-console.log('Average Styles attributed', _.sum(_.map(styleCounts, 'totalCount')) / styleCounts.length);
+const appliedCountAverage = _.sum(_.map(styleCounts, 'appliedCount')) / styleCounts.length;
+const attributedCountAverage = _.sum(_.map(styleCounts, 'totalCount')) / styleCounts.length;
+console.log('Average Styles applied', appliedCountAverage);
+console.log('Average Styles attributed', attributedCountAverage);
+console.log('Style Usage Average (Max 1)', 1 - (attributedCountAverage - appliedCountAverage) / attributedCountAverage);
 ```
 
 ## How do these react to compression?
