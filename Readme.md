@@ -107,6 +107,32 @@ Right now the layout comprises a set of divs with random heights widths and back
 ## Better Style count estimation
 The (Style / Css Rule) metric might be improved upon by detecting how many styles actually get applied to each node. This would have to be done by visiting each node and seeing how many css rules apply to it. This could be much more than the roughly four that were estimated.
 
+The below script can be used to get the average style attributes attributed and applied to a node.
+
+```javascript
+const nodes = Array.prototype.slice.call(document.querySelectorAll('*'), 0);
+
+const styleCounts = nodes.map((n) => {
+  const rules = Array.prototype.slice.call(getMatchedCSSRules(n), 0);
+
+  const styleSet = rules.map((r) => {
+    const s = r.style;
+    return _.pick(s, Array.prototype.slice.call(s, 0, s.length))
+  });
+
+  const styles = _.merge({}, ...styleSet);
+  return {
+    appliedCount: Object.keys(styles).length,
+    totalCount: _.sum(_.map(styles, (s)=>{
+      return Object.keys(s).length;
+    }))
+  }
+});
+
+console.log('Average Styles applied', _.sum(_.map(styleCounts, 'appliedCount')) / styleCounts.length);
+console.log('Average Styles attributed', _.sum(_.map(styleCounts, 'totalCount')) / styleCounts.length);
+```
+
 ## How do these react to compression?
 With inline styling, there will be a lot of repeated text (this is part of the advantage of css). Would this repeated text mean better compression when compared to the css files?
 
