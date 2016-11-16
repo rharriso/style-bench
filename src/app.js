@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import fs from 'fs';
 import http from 'http';
-import prompt from 'prompt';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import faker from 'faker';
@@ -11,7 +10,6 @@ import serveStatic from 'serve-static-throttle';
 import finalhandler from 'finalhandler';
 
 const MAX_NODE_COUNT = 1000;
-let nodeCount = 0;
 const MAX_DEPTH = 10;
 const AVAILABLE_CLASSES = faker.lorem.words(20).split(' ');
 const ITERATIONS = parseInt(process.env.ITERATIONS, 10);
@@ -19,21 +17,32 @@ const INLINE_STYLE = process.env.INLINE_STYLE === 'true';
 const THROTTLING = process.env.THROTTLE === 'true';
 const TEST_URL = THROTTLING ? 'http://localhost:3000/test.html'
                             : `file:${process.cwd()}/test.html`;
+const BROWSER = process.env.BROWSER || 'chrome';
+
+let nodeCount = 0;
 let style = '';
 
 
 class TreeNode extends React.Component {
   static get style(){
-    return {
+    const style = {
       display: 'inline-block',
-      'background-color': faker.internet.color(),
       height: _.random(200, 1000),
       width: _.random(200, 1000)
     };
+
+    if (INLINE_STYLE) {
+      style.backgroundColor = faker.internet.color();
+    } else {
+      style['background-color'] = faker.internet.color();
+    }
+
+    return style;
   }
 
   /**
-   *
+   * render the treenode
+   * @return {JSXElement} The element
    */
   render(){
     const className = _.sample(AVAILABLE_CLASSES);
@@ -70,7 +79,7 @@ class TreeNode extends React.Component {
   }
 }
 
-const options = { desiredCapabilities: { browserName: 'chrome' }};
+const options = { desiredCapabilities: { browserName: BROWSER }};
 const client = webdriverio.remote(options).init();
 const results = [];
 const fileSizes = [];
@@ -86,7 +95,9 @@ if (THROTTLING) {
 }
 
 /**
- *
+ * load html and time the rendering
+ *  @param {Number} iteration - what run is this?
+ *  @returns {Promise} - promise of saving metrics
  */
 function loadHtml(iteration = 0) {
   if (iteration > ITERATIONS) {
@@ -101,7 +112,7 @@ function loadHtml(iteration = 0) {
   fs.writeFileSync('test.html',
    `<html>
       <head>
-        <link rel='stylesheet' href='style.css'/>
+        ${INLINE_STYLE ? '' : <link rel='stylesheet' href='style.css'/>}
       </head>
       <body>${html}</body>
     </html>`
@@ -128,11 +139,14 @@ function loadHtml(iteration = 0) {
               });
 }
 
+console.log('----------');
+console.log('INLINE_STYLE', INLINE_STYLE);
+console.log('ITERATIONS', ITERATIONS);
+console.log('THROTTLE', THROTTLING);
+console.log('BROWSER', BROWSER);
+
 loadHtml(0).then(() => {
   client.end().then(() => {
-    console.log('----------');
-    console.log('INLINE_STYLE', INLINE_STYLE);
-    console.log('THROTTLE', THROTTLING);
     console.log('Average Run Time: ', Math.floor(_.sum(results) / results.length));
     console.log('Average Size:     ', Math.floor(_.sum(fileSizes) / fileSizes.length));
     console.log('----------');

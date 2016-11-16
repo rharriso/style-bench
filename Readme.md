@@ -36,13 +36,30 @@ Looking samples I've chosen the following parameters to run the tests.
 1. 1000 nodes (rounded up from the median nodes).
 2. 1 rule / element.
 2. 4 styles / rule
-4. Regular 3g setting for (when throttling) throttling (750kbps ~= 2^19 525kbps)
+4. Regular 3g setting for throttling (750kbps ~= 2^19 525kbps)
 
-# How times were measured?
+# What is measured?
 
-Filesize, and Timing
+## Generated pages
 
-# Results
+The pages loaded and measured are generated anew for each iteration.
+
+## File Size
+
+The combined file-size of the style and markup. In the case of inline styling there is no separate style file and the size is only the markup file.
+
+
+## Render Time
+
+The time to render is calculated from the start of the request to the end of load. This takes into consideration the time to load the files as well as the time to parse, apply, and layout given style.
+
+```javascript
+const t = performance.timing;
+return t.loadEventEnd - t.requestStart;
+```
+
+
+# Raw Results
 
 After running for 1000 iterations here are the results for average render time.
 
@@ -53,3 +70,16 @@ CSS FILE (throttled):
 Inline style
 
 Inline style (throttled):
+
+# Findings
+
+# Possible Improvements / Further Study
+
+## More representative layout
+Right now the layout comprises a set of divs with random heights widths and background colors. This was quick to put together, but is hardly a good facsimile for a webpage.
+
+## Better Style count estimation
+The (Style / Css Rule) metric might be improved upon by detecting how many styles actually get applied to each node. This would have to be done by visiting each node and seeing how many css rules apply to it. This could be much more than the roughly four that were estimated.
+
+## How do these react to compression?
+With inline styling, there will be a lot of repeated text (this is part of the advantage of css). Would this repeated text mean better compression when compared to the css files?
