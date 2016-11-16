@@ -1,17 +1,34 @@
+# Abstract
+
+There has been some interest in exploring the use of inline styling libraries
+
+The purpose of this experiment is to see if there are any performance effects caused by applying styles inline versus applying them via a css file. This experiment creates static HTML and CSS files, loads them using selenium webdriver, and measures the render time using [Performance Timing](https://developer.mozilla.org/en-US/docs/Web/API/Performance/timing).
+
+# Install build and run
+
+1. Download and change to directory.
+2. Follow Selenium and Chrome install instructions [here](http://webdriver.io/guide/getstarted/install.html).
+    * on OSX install selenium with: `brew install selenium-server-standalone`
+3. run tests:
+```bash
+  ITERATIONS=1000 ./run-tests.sh
+```
+
 # Size of Test pages
 
 The number of styles, nodes, and selectors used in this experiment were determined by sampling pages on existing sites.
 
-## getting node and style counts from pages
-
-1. Visit pages
-2. Run js
+In order to determine the number of nodes and styles to emulate in the the Javascript below was run on a sample of web pages.
 
 ```javascript
-console.log('Element Count:', document.querySelectorAll('*').length)
-rules = _.flatMap(document.styleSheets, (s) => { return s.cssRules && Array.prototype.slice.call(s.cssRules, 0); });
-console.log('Css Rule Count:', rules.length);
-console.log('Style Count:', _.sum(rules.map((r) => {return r && r.style && r.style.length})));
+  console.log('Element Count:', document.querySelectorAll('*').length)
+
+  rules = _.flatMap(document.styleSheets, (s) => {
+    return s.cssRules && Array.prototype.slice.call(s.cssRules, 0);
+  });
+
+  console.log('Css Rule Count:', rules.length);
+  console.log('Style Count:', _.sum(rules.map((r) => {return r && r.style && r.style.length})));
 ```
 
 ## Results
@@ -61,17 +78,20 @@ return t.loadEventEnd - t.requestStart;
 
 # Raw Results
 
-After running each trial for 1000 iterations here are the results for average render time.
-
-| Inline or Separate | Throttled? | Avg. Render Time (ms) | Average Total File Size |
-|--------------------|------------|-----------------------|-------------------------|
-| Separate           | Yes        | 1223                  | 747315                  |
-| Inline             | Yes        | 1364                  | 735074                  |
-| Separate           | No         | 109                   | 744616                  |
-| Inline             | No         | 43                    | 735349                  |
+| Inline or Separate | Throttled? | Avg. Render Time (ms) | Average Total File Size (Bytes) |
+|--------------------|------------|-----------------------|---------------------------------|
+| Separate           | Yes        | 1223                  | 747315                          |
+| Inline             | Yes        | 1364                  | 735074                          |
+| Separate           | No         | 109                   | 744616                          |
+| Inline             | No         | 43                    | 735349                          |
 
 
-# Findings
+# Supposition
+
+The results appear mixed. In the case of throttling, the separate files appears to load more quickly. This is ad odds with the larger file size total. It is true that the HTML file is smaller in the case of separated styles: this might allow the browser to start parsing the HTML document and populating the DOM sooner, then later applying the styles once the css file is downloaded.
+
+Curiously the relationship is reversed without throttling the connection and loading directly off the filesystem. Perhaps this is because the overhead of a larger HTML file is obviated and the additional roundtrip of the css file begins to dominate the render time.
+
 
 # Possible Improvements / Further Study
 
@@ -83,3 +103,6 @@ The (Style / Css Rule) metric might be improved upon by detecting how many style
 
 ## How do these react to compression?
 With inline styling, there will be a lot of repeated text (this is part of the advantage of css). Would this repeated text mean better compression when compared to the css files?
+
+## What about media queries and stateful styles?
+How is rendering responsiveness affected by using something like [Radium](https://github.com/FormidableLabs/radium) to handle media queries and the style state (eg: `:hover`, `:active`)
