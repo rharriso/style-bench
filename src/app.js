@@ -85,7 +85,7 @@ const results = [];
 const fileSizes = [];
 
 if (THROTTLING) {
-  const staticServe = serveStatic('./', {throttle: Math.pow(2, 19)}); // 100kBps
+  const staticServe = serveStatic('./', {throttle: Math.pow(2, 19)}); // ~ 525kbps
   // Create server
   var server = http.createServer(function onRequest(req, res) {
     staticServe(req, res, finalhandler(req, res));

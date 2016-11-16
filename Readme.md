@@ -21,9 +21,7 @@ This experiment creates static HTML and CSS files, loads them using selenium web
 
 # Size of Test pages
 
-The number of styles, nodes, and selectors used in this experiment were determined by sampling pages on existing sites.
-
-In order to determine the number of nodes and styles to emulate in the the Javascript below was run on a sample of web pages.
+The number of styles, nodes, and selectors used in this experiment were determined by sampling pages on existing sites. The javascript below was used.
 
 ```javascript
   console.log('Element Count:', document.querySelectorAll('*').length)
@@ -53,12 +51,15 @@ In order to determine the number of nodes and styles to emulate in the the Javas
 
 ## Test Parameters
 
-Looking samples I've chosen the following parameters to run the tests.
+After looking at the samples above; the following parameters were chosen for each experimental trial.
 
 1. 1000 nodes (rounded up from the median nodes).
 2. 1 rule / element.
 2. 4 styles / rule
-4. Regular 3g setting for throttling (750kbps ~= 2^19 525kbps)
+
+# Throttling
+
+In order to investigate the effects of non trivial download times. A set of trials are run using a speed throttling server. The speed chosen was `2^19kbps` or `~= 525kbps`. This is close to the "Regular 3g (750kbps)" setting in the Chrome Dev tools.
 
 # What is measured?
 
