@@ -3,6 +3,7 @@
 There has been some interest in exploring the use of inline styling libraries such as [Radium](https://github.com/FormidableLabs/radium). The purpose of this experiment is to see if there are any performance effects caused by applying styles inline versus applying them via a css file.
 
 In this experiment we are looking at two possible advantages of inline styling:
+
 1. Smaller total download size (the additional size of HTMl is offset by the removal of the css file)
 2. Faster total download+render time due to the removal of an additional roundtrip, and time required to parse and resolve css selectors.
 
