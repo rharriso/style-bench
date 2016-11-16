@@ -110,10 +110,10 @@ The (Style / Css Rule) metric might be improved upon by detecting how many style
 The below script can be used to get the average style attributes attributed and applied to a node.
 
 ```javascript
-const nodes = Array.prototype.slice.call(document.querySelectorAll('*'), 0);
+let nodes = Array.prototype.slice.call(document.querySelectorAll('*'), 0);
 
-const styleCounts = nodes.map((n) => {
-  const rules = Array.prototype.slice.call(getMatchedCSSRules(n), 0);
+let styleCounts = nodes.map((n) => {
+  const rules = Array.prototype.slice.call(getMatchedCSSRules(n) || [], 0);
 
   const styleSet = rules.map((r) => {
     const s = r.style;
@@ -129,8 +129,8 @@ const styleCounts = nodes.map((n) => {
   }
 });
 
-const appliedCountAverage = _.sum(_.map(styleCounts, 'appliedCount')) / styleCounts.length;
-const attributedCountAverage = _.sum(_.map(styleCounts, 'totalCount')) / styleCounts.length;
+let appliedCountAverage = _.sum(_.map(styleCounts, 'appliedCount')) / styleCounts.length;
+let attributedCountAverage = _.sum(_.map(styleCounts, 'totalCount')) / styleCounts.length;
 console.log('Average Styles applied', appliedCountAverage);
 console.log('Average Styles attributed', attributedCountAverage);
 console.log('Style Usage Average (Max 1)', 1 - (attributedCountAverage - appliedCountAverage) / attributedCountAverage);
