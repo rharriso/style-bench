@@ -1,8 +1,12 @@
 # Abstract
 
-There has been some interest in exploring the use of inline styling libraries
+There has been some interest in exploring the use of inline styling libraries such as [Radium](https://github.com/FormidableLabs/radium). The purpose of this experiment is to see if there are any performance effects caused by applying styles inline versus applying them via a css file.
 
-The purpose of this experiment is to see if there are any performance effects caused by applying styles inline versus applying them via a css file. This experiment creates static HTML and CSS files, loads them using selenium webdriver, and measures the render time using [Performance Timing](https://developer.mozilla.org/en-US/docs/Web/API/Performance/timing).
+In this experiment we are looking at two possible advantages of inline styling:
+1. Smaller total download size (the additional size of HTMl is offset by the removal of the css file)
+2. Faster total download+render time due to the removal of an additional roundtrip, and time required to parse and resolve css selectors.
+
+This experiment creates static HTML and CSS files, loads them using selenium webdriver, and measures the render time using [Performance Timing](https://developer.mozilla.org/en-US/docs/Web/API/Performance/timing).
 
 # Install build and run
 
