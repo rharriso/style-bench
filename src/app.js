@@ -112,7 +112,7 @@ function loadHtml(iteration = 0) {
   fs.writeFileSync('test.html',
    `<html>
       <head>
-        ${INLINE_STYLE ? '' : <link rel='stylesheet' href='style.css'/>}
+        ${INLINE_STYLE ? '' : '<link rel="stylesheet" href="style.css"/>'}
       </head>
       <body>${html}</body>
     </html>`

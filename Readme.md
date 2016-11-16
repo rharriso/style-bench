@@ -61,15 +61,15 @@ return t.loadEventEnd - t.requestStart;
 
 # Raw Results
 
-After running for 1000 iterations here are the results for average render time.
+After running each trial for 1000 iterations here are the results for average render time.
 
-CSS FILE:
+| Inline or Separate | Throttled? | Avg. Render Time (ms) | Average Total File Size |
+|--------------------|------------|-----------------------|-------------------------|
+| Separate           | Yes        | 1223                  | 747315                  |
+| Inline             | Yes        | 1364                  | 735074                  |
+| Separate           | No         | 109                   | 744616                  |
+| Inline             | No         | 43                    | 735349                  |
 
-CSS FILE (throttled):
-
-Inline style
-
-Inline style (throttled):
 
 # Findings
 
